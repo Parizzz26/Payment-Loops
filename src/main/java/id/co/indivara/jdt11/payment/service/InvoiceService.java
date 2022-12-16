@@ -16,7 +16,6 @@ public interface InvoiceService {
 
     Company getCompany(Integer companyId);
 
-    Promo getPromo(Integer promoId);
 
     Page<Invoice> invoiceUser();
 }

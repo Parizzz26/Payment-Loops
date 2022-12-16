@@ -37,11 +37,11 @@ public class UserServiceImpl implements UserService {
         User u = userRepository.save(user);
 
         Saldo saldo = new Saldo();
+        saldo.setIdBalance(u.getId());
         saldo.setBalance(BigDecimal.ZERO);
         saldo.setUpdateDate(new Date());
         saldo.setUser(u);
-        saldoRepository.save(saldo);
-
+        Saldo s = saldoRepository.save(saldo);
         return user;
     }
 

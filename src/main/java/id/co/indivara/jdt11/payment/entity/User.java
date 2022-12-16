@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -20,23 +21,20 @@ import java.util.Date;
 @Valid
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-
+    @NotEmpty
     private String nama;
 
-
+    @NotEmpty
     private String email;
 
-
-
+    @NotEmpty
+    @Length(min = 8)
     private String password;
 
     private String jenisKelamin;
 
     private Date createDateUser;
-
-    @OneToOne(mappedBy = "user")
-    private Saldo saldo;
 }

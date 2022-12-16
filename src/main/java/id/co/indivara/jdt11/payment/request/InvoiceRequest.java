@@ -9,7 +9,7 @@ public class InvoiceRequest {
     private Long userId;
     private Long idCompany;
     private Long jenisId;
-    private Long idPromo;
     private String namaJenis;
     private BigDecimal basePrice;
+    private BigDecimal totalPrice;
 }

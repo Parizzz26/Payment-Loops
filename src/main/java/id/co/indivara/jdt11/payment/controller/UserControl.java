@@ -4,10 +4,7 @@ import id.co.indivara.jdt11.payment.entity.User;
 import id.co.indivara.jdt11.payment.request.UserRequest;
 import id.co.indivara.jdt11.payment.service.implementation.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,7 +16,7 @@ public class UserControl {
     UserServiceImpl userService;
 
     @PostMapping("/save")
-    public User saveUser(UserRequest request){
+    public User saveUser(@RequestBody UserRequest request){
         return userService.saveUser(request);
     }
 

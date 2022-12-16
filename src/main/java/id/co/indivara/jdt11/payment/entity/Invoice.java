@@ -37,34 +37,23 @@ public class Invoice {
     @NotNull
     @DecimalMin("1.00")
     private BigDecimal totalPrice;
-
-    private String namaJenis;
-    private String namaCompany;
-    private BigDecimal discount;
-    private BigDecimal cashback;
     private Date createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "jenis_id", nullable = false)
+    @JoinColumn(name = "jenis_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Jenis jenis;
 
     @ManyToOne(fetch =  FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Company company;
-
-    @ManyToOne(fetch =  FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "promo_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private Promo promo;
 }

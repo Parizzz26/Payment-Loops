@@ -21,7 +21,6 @@ import java.util.Date;
 @Table(name = "saldo")
 public class Saldo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_balance")
     private Long idBalance;
 
@@ -32,6 +31,6 @@ public class Saldo {
     private Date updateDate;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @PrimaryKeyJoinColumn(name = "id_balance")
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
 }

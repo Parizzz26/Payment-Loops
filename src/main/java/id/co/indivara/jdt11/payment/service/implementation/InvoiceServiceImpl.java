@@ -36,38 +36,27 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     CompanyRepository companyRepository;
 
-    @Autowired
-    PromoRepository promoRepository;
 
     @Override
     public InvoiceResponse saveInvoice(InvoiceRequest request) {
         Invoice invoice = new Invoice();
         invoice.setBasePrice(request.getBasePrice());
+        invoice.setTotalPrice(request.getTotalPrice());
         invoice.setUser(getUser(Math.toIntExact(request.getUserId())));
         invoice.setJenis(getJenis(Math.toIntExact(request.getJenisId())));
         invoice.setCompany(getCompany(Math.toIntExact(request.getIdCompany())));
-        invoice.setPromo(getPromo(Math.toIntExact(request.getIdPromo())));
-        invoice.setNamaJenis(request.getJenisId()==1?"Topup":"Payment");
-        invoice.setTotalPrice(invoice.getBasePrice());
         invoice.setCreatedDate(new Date());
 
         Invoice i = invoiceRepository.save(invoice);
+        saveSaldo(Math.toIntExact(request.getUserId()),request);
 
         InvoiceResponse response = new InvoiceResponse();
         response.setBasePrice(i.getBasePrice());
         response.setUserId(i.getUser().getId());
         response.setJenisId(i.getJenis().getJenisId());
         response.setIdCompany(i.getCompany().getIdCompany());
-        response.setIdPromo(i.getPromo().getIdPromo());
-        response.setNamaJenis(i.getNamaJenis());
-        response.setNamaCompany(i.getCompany().getCompany());
-        response.setDiscount(i.getPromo().getDiscount());
-        response.setCashback(i.getPromo().getCashBack());
-        response.setTotalPrice(response.getDiscount()!=null?i.getBasePrice()
-                .subtract(i.getBasePrice().multiply(response.getDiscount()).divide(BigDecimal.valueOf(100))):
-                i.getBasePrice().subtract(response.getCashback()));
+        response.setTotalPrice(i.getTotalPrice());
         response.setCreatedDate(i.getCreatedDate());
-        saveSaldo(Math.toIntExact(response.getUserId()),response);
         return response;
     }
 
@@ -94,29 +83,22 @@ public class InvoiceServiceImpl implements InvoiceService {
         return company;
     }
 
-    @Override
-    public Promo getPromo(Integer promoId) {
-        Promo promo = promoRepository.findById(Long.valueOf(promoId))
-                .orElseThrow(()->new PaymentException("Promo Not Found"));
-        promo.getDiscount();
-        promo.getCashBack();
-        return promo;
-    }
 
     @Override
     public Page<Invoice> invoiceUser() {
-        return (Page<Invoice>)invoiceRepository.findAll(PageRequest.of(1,5, Sort.by(Sort.Direction.DESC, "userId")));
+        return (Page<Invoice>)invoiceRepository.findAll(PageRequest.of(0,5, Sort.by(Sort.Direction.DESC, "userId")));
     }
 
 
-    private Saldo saveSaldo(Integer userId, InvoiceResponse response) {
+    private Saldo saveSaldo(Integer userId, InvoiceRequest request) {
         Saldo saldo = saldoRepository.findById(Long.valueOf(userId))
                 .orElseThrow(()->new PaymentException("User Not Found"));
-        BigDecimal hasilSaaldo = response.getTotalPrice().add(saldo.getBalance());
+        BigDecimal hasilSaldo = request.getBasePrice().add(saldo.getBalance());
+        BigDecimal kurangSaldo = saldo.getBalance().subtract(request.getBasePrice());
         Saldo saldo1 = new Saldo();
         saldo1.setIdBalance(saldo.getIdBalance());
         saldo1.setUser(getUser(userId));
-        saldo1.setBalance(hasilSaaldo);
+        saldo1.setBalance(request.getJenisId()!=1?kurangSaldo:hasilSaldo);
         saldo1.setUpdateDate(new Date());
         saldoRepository.save(saldo1);
         return saldo;
